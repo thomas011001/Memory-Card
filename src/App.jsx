@@ -1,35 +1,89 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import ScoreBoard from "./components/ScoreBoard";
+import CardsContainer from "./components/CardsContainer";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // eslint-disable-next-line no-unused-vars
+  const [state, setState] = useState("normal");
+  const [imgs, setImgs] = useState([]);
+  const [score, setScore] = useState(0);
+  const [highestScore, setHighestScore] = useState(
+    parseInt(localStorage.getItem("highestScore"))
+  );
+  const [tryNumber, setTryNumber] = useState(0);
+
+  useEffect(() => {
+    localStorage.setItem("highestScore", `${highestScore}`);
+  }, [highestScore]);
+
+  useEffect(() => {
+    if (!localStorage.getItem("highestScore")) {
+      localStorage.setItem("highestScore", "0");
+    }
+
+    fetch("https://boringapi.com/api/v1/photos/random?num=10")
+      .then((res) => res.json())
+      .then((data) => {
+        const photos = data.photos;
+        const newImgs = [];
+        photos.forEach((photo) => {
+          newImgs.push({ clicked: false, url: photo.url });
+        });
+        setImgs(newImgs);
+      });
+  }, []);
+
+  useEffect(() => {
+    setScore(0);
+    imgs.forEach((img) => (img.clicked = false));
+    setState("normal");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tryNumber]);
+
+  useEffect(() => {
+    if (score > highestScore) {
+      setHighestScore(score);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [score]);
+
+  function handleCardClick(index) {
+    const shuffle = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    if (imgs[index].clicked) {
+      setState("lose");
+      const shuffledArray = shuffle(imgs);
+      setImgs(shuffledArray);
+      setTryNumber(tryNumber + 1);
+    } else {
+      const newImgs = [...imgs];
+      newImgs[index].clicked = true;
+      const shuffledArray = shuffle(newImgs);
+      setImgs(shuffledArray);
+      setScore(score + 1);
+      if (newImgs.every((img) => img.clicked)) {
+        setState("win");
+        setTryNumber(tryNumber + 1);
+      }
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <main>
+      <header>
+        <h1>Memory Card</h1>
+        <ScoreBoard score={score} highestScore={highestScore} />
+      </header>
+      <CardsContainer imgs={imgs} handleClick={handleCardClick} />
+    </main>
+  );
 }
 
-export default App
+export default App;

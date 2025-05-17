@@ -9,7 +9,7 @@ function App() {
   const [imgs, setImgs] = useState([]);
   const [score, setScore] = useState(0);
   const [highestScore, setHighestScore] = useState(
-    parseInt(localStorage.getItem("highestScore"))
+    parseInt(localStorage.getItem("highestScore")) || 0
   );
   const [tryNumber, setTryNumber] = useState(0);
 

@@ -75,11 +75,19 @@ function App() {
     }
   }
 
+  function resetProgress() {
+    setHighestScore(0);
+  }
+
   return (
     <main>
       <header>
         <h1>Memory Card</h1>
-        <ScoreBoard score={score} highestScore={highestScore} />
+        <ScoreBoard
+          score={score}
+          highestScore={highestScore}
+          reset={resetProgress}
+        />
       </header>
       <CardsContainer imgs={imgs} handleClick={handleCardClick} />
     </main>

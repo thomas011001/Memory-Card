@@ -54,7 +54,7 @@ h1 {
   background-color: white;
   padding: 0;
   width: 100%;
-  aspect-ratio: 1 / 1; /* يخلي الزر مربع */
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -67,6 +67,17 @@ h1 {
   display: block;
 }
 
+.card button:focus {
+  outline: solid white 5px;
+}
+
 .card:hover {
   transform: translateY(-10px);
+}
+
+.score-board button {
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 10px;
 }
